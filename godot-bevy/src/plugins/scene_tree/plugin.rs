@@ -234,17 +234,21 @@ fn write_scene_tree_events(
     event_writer.write_batch(event_reader.0.try_iter());
 }
 
+// Marks an entity as protected from cleanup if an attached node is freed
+#[derive(Component)]
+pub struct ProtectedNodeEntity;
+
 fn create_scene_tree_entity(
     commands: &mut Commands,
     events: impl IntoIterator<Item = SceneTreeEvent>,
     scene_tree: &mut SceneTreeRef,
-    entities: &mut Query<(&mut GodotNodeHandle, Entity)>,
+    entities: &mut Query<(&mut GodotNodeHandle, Entity, Option<ProtectedNodeEntity>)>,
     config: &SceneTreeConfig,
     component_registry: &SceneTreeComponentRegistry,
 ) {
     let mut ent_mapping = entities
         .iter()
-        .map(|(reference, ent)| (reference.instance_id(), ent))
+        .map(|(reference, ent, protected)| (reference.instance_id(), (ent, protected)))
         .collect::<HashMap<_, _>>();
     let scene_root = scene_tree.get().get_root().unwrap();
     let collision_watcher = scene_tree
@@ -257,7 +261,7 @@ fn create_scene_tree_entity(
         trace!(target: "godot_scene_tree_events", event = ?event);
 
         let mut node = event.node.clone();
-        let ent = ent_mapping.get(&node.instance_id()).cloned();
+        let ent = ent_mapping.get(&node.instance_id()).0.cloned();
 
         match event.event_type {
             SceneTreeEventType::NodeAdded => {
@@ -343,7 +347,7 @@ fn create_scene_tree_entity(
                 component_registry.add_to_entity(&mut ent, &event.node);
 
                 let ent = ent.id();
-                ent_mapping.insert(node.instance_id(), ent);
+                ent_mapping.insert(node.instance_id(), (ent, None));
 
                 // Try to add any registered bundles for this node type
                 super::autosync::try_add_bundles_for_node(commands, ent, &event.node);
@@ -362,8 +366,12 @@ fn create_scene_tree_entity(
                 }
             }
             SceneTreeEventType::NodeRemoved => {
-                if let Some(ent) = ent {
-                    commands.entity(ent).despawn();
+                if let Some(entmap) = ent {
+                    let ent = entmap.0;
+                    let protected = entmap.1.is_some();
+                    if !protected {
+                        commands.entity(ent).despawn();
+                    }
                     ent_mapping.remove(&node.instance_id());
                 } else {
                     // Entity was already despawned (common when using queue_free)
