@@ -211,8 +211,8 @@ pub fn remove_comprehensive_node_type_markers(
     entity_commands: &mut EntityCommands,
     node: &mut GodotNodeHandle,
 ) {{
-    // All nodes inherit from Node, so add this first
-    entity_commands.insert(NodeMarker);
+    // All nodes inherit from Node, so remove this first
+    entity_commands.remove::<NodeMarker>();
 
     // Check the major hierarchy branches to minimize FFI calls
     if node.try_get::<godot::classes::Node3D>().is_some() {{
