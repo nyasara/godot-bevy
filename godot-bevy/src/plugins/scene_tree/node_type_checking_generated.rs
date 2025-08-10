@@ -34,6 +34,31 @@ pub fn add_comprehensive_node_type_markers(
     check_universal_node_types_comprehensive(entity_commands, node);
 }
 
+pub fn remove_comprehensive_node_type_markers(
+    entity_commands: &mut EntityCommands,
+    node: &mut GodotNodeHandle,
+) {
+    // All nodes inherit from Node, so add this first
+    entity_commands.insert(NodeMarker);
+
+    // Check the major hierarchy branches to minimize FFI calls
+    if node.try_get::<godot::classes::Node3D>().is_some() {
+        entity_commands.remove::<Node3DMarker>();
+        remove_3d_node_types_comprehensive(entity_commands, node);
+    } else if node.try_get::<godot::classes::Node2D>().is_some() {
+        entity_commands.remove::<Node2DMarker>();
+        entity_commands.remove::<CanvasItemMarker>(); // Node2D inherits from CanvasItem
+        remove_2d_node_types_comprehensive(entity_commands, node);
+    } else if node.try_get::<godot::classes::Control>().is_some() {
+        entity_commands.remove::<ControlMarker>();
+        entity_commands.remove::<CanvasItemMarker>(); // Control inherits from CanvasItem
+        remove_control_node_types_comprehensive(entity_commands, node);
+    }
+
+    // Check node types that inherit directly from Node
+    remove_universal_node_types_comprehensive(entity_commands, node);
+}
+
 fn check_3d_node_types_comprehensive(
     entity_commands: &mut EntityCommands,
     node: &mut GodotNodeHandle,
@@ -338,457 +363,6 @@ fn check_3d_node_types_comprehensive(
     if node.try_get::<godot::classes::VisualInstance3D>().is_some() {
         entity_commands.insert(VisualInstance3DMarker);
     }
-}
-
-fn check_2d_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
-    if node.try_get::<godot::classes::AnimatableBody2D>().is_some() {
-        entity_commands.insert(AnimatableBody2DMarker);
-    }
-    if node.try_get::<godot::classes::AnimatedSprite2D>().is_some() {
-        entity_commands.insert(AnimatedSprite2DMarker);
-    }
-    if node.try_get::<godot::classes::Area2D>().is_some() {
-        entity_commands.insert(Area2DMarker);
-    }
-    if node.try_get::<godot::classes::AudioListener2D>().is_some() {
-        entity_commands.insert(AudioListener2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::AudioStreamPlayer2D>()
-        .is_some()
-    {
-        entity_commands.insert(AudioStreamPlayer2DMarker);
-    }
-    if node.try_get::<godot::classes::BackBufferCopy>().is_some() {
-        entity_commands.insert(BackBufferCopyMarker);
-    }
-    if node.try_get::<godot::classes::Bone2D>().is_some() {
-        entity_commands.insert(Bone2DMarker);
-    }
-    if node.try_get::<godot::classes::CpuParticles2D>().is_some() {
-        entity_commands.insert(CPUParticles2DMarker);
-    }
-    if node.try_get::<godot::classes::Camera2D>().is_some() {
-        entity_commands.insert(Camera2DMarker);
-    }
-    if node.try_get::<godot::classes::CanvasGroup>().is_some() {
-        entity_commands.insert(CanvasGroupMarker);
-    }
-    if node.try_get::<godot::classes::CanvasModulate>().is_some() {
-        entity_commands.insert(CanvasModulateMarker);
-    }
-    if node.try_get::<godot::classes::CharacterBody2D>().is_some() {
-        entity_commands.insert(CharacterBody2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::CollisionObject2D>()
-        .is_some()
-    {
-        entity_commands.insert(CollisionObject2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::CollisionPolygon2D>()
-        .is_some()
-    {
-        entity_commands.insert(CollisionPolygon2DMarker);
-    }
-    if node.try_get::<godot::classes::CollisionShape2D>().is_some() {
-        entity_commands.insert(CollisionShape2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::DampedSpringJoint2D>()
-        .is_some()
-    {
-        entity_commands.insert(DampedSpringJoint2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::DirectionalLight2D>()
-        .is_some()
-    {
-        entity_commands.insert(DirectionalLight2DMarker);
-    }
-    if node.try_get::<godot::classes::GpuParticles2D>().is_some() {
-        entity_commands.insert(GPUParticles2DMarker);
-    }
-    if node.try_get::<godot::classes::GrooveJoint2D>().is_some() {
-        entity_commands.insert(GrooveJoint2DMarker);
-    }
-    if node.try_get::<godot::classes::Joint2D>().is_some() {
-        entity_commands.insert(Joint2DMarker);
-    }
-    if node.try_get::<godot::classes::Light2D>().is_some() {
-        entity_commands.insert(Light2DMarker);
-    }
-    if node.try_get::<godot::classes::LightOccluder2D>().is_some() {
-        entity_commands.insert(LightOccluder2DMarker);
-    }
-    if node.try_get::<godot::classes::Line2D>().is_some() {
-        entity_commands.insert(Line2DMarker);
-    }
-    if node.try_get::<godot::classes::Marker2D>().is_some() {
-        entity_commands.insert(Marker2DMarker);
-    }
-    if node.try_get::<godot::classes::MeshInstance2D>().is_some() {
-        entity_commands.insert(MeshInstance2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::MultiMeshInstance2D>()
-        .is_some()
-    {
-        entity_commands.insert(MultiMeshInstance2DMarker);
-    }
-    if node.try_get::<godot::classes::ParallaxLayer>().is_some() {
-        entity_commands.insert(ParallaxLayerMarker);
-    }
-    if node.try_get::<godot::classes::Path2D>().is_some() {
-        entity_commands.insert(Path2DMarker);
-    }
-    if node.try_get::<godot::classes::PathFollow2D>().is_some() {
-        entity_commands.insert(PathFollow2DMarker);
-    }
-    if node.try_get::<godot::classes::PhysicalBone2D>().is_some() {
-        entity_commands.insert(PhysicalBone2DMarker);
-    }
-    if node.try_get::<godot::classes::PhysicsBody2D>().is_some() {
-        entity_commands.insert(PhysicsBody2DMarker);
-    }
-    if node.try_get::<godot::classes::PinJoint2D>().is_some() {
-        entity_commands.insert(PinJoint2DMarker);
-    }
-    if node.try_get::<godot::classes::PointLight2D>().is_some() {
-        entity_commands.insert(PointLight2DMarker);
-    }
-    if node.try_get::<godot::classes::Polygon2D>().is_some() {
-        entity_commands.insert(Polygon2DMarker);
-    }
-    if node.try_get::<godot::classes::RayCast2D>().is_some() {
-        entity_commands.insert(RayCast2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::RemoteTransform2D>()
-        .is_some()
-    {
-        entity_commands.insert(RemoteTransform2DMarker);
-    }
-    if node.try_get::<godot::classes::RigidBody2D>().is_some() {
-        entity_commands.insert(RigidBody2DMarker);
-    }
-    if node.try_get::<godot::classes::ShapeCast2D>().is_some() {
-        entity_commands.insert(ShapeCast2DMarker);
-    }
-    if node.try_get::<godot::classes::Skeleton2D>().is_some() {
-        entity_commands.insert(Skeleton2DMarker);
-    }
-    if node.try_get::<godot::classes::Sprite2D>().is_some() {
-        entity_commands.insert(Sprite2DMarker);
-    }
-    if node.try_get::<godot::classes::StaticBody2D>().is_some() {
-        entity_commands.insert(StaticBody2DMarker);
-    }
-    if node.try_get::<godot::classes::TileMap>().is_some() {
-        entity_commands.insert(TileMapMarker);
-    }
-    if node.try_get::<godot::classes::TileMapLayer>().is_some() {
-        entity_commands.insert(TileMapLayerMarker);
-    }
-    if node
-        .try_get::<godot::classes::TouchScreenButton>()
-        .is_some()
-    {
-        entity_commands.insert(TouchScreenButtonMarker);
-    }
-    if node
-        .try_get::<godot::classes::VisibleOnScreenEnabler2D>()
-        .is_some()
-    {
-        entity_commands.insert(VisibleOnScreenEnabler2DMarker);
-    }
-    if node
-        .try_get::<godot::classes::VisibleOnScreenNotifier2D>()
-        .is_some()
-    {
-        entity_commands.insert(VisibleOnScreenNotifier2DMarker);
-    }
-}
-
-fn check_control_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
-    if node
-        .try_get::<godot::classes::AspectRatioContainer>()
-        .is_some()
-    {
-        entity_commands.insert(AspectRatioContainerMarker);
-    }
-    if node.try_get::<godot::classes::BaseButton>().is_some() {
-        entity_commands.insert(BaseButtonMarker);
-    }
-    if node.try_get::<godot::classes::BoxContainer>().is_some() {
-        entity_commands.insert(BoxContainerMarker);
-    }
-    if node.try_get::<godot::classes::Button>().is_some() {
-        entity_commands.insert(ButtonMarker);
-    }
-    if node.try_get::<godot::classes::CenterContainer>().is_some() {
-        entity_commands.insert(CenterContainerMarker);
-    }
-    if node.try_get::<godot::classes::CheckBox>().is_some() {
-        entity_commands.insert(CheckBoxMarker);
-    }
-    if node.try_get::<godot::classes::CheckButton>().is_some() {
-        entity_commands.insert(CheckButtonMarker);
-    }
-    if node.try_get::<godot::classes::CodeEdit>().is_some() {
-        entity_commands.insert(CodeEditMarker);
-    }
-    if node.try_get::<godot::classes::ColorPicker>().is_some() {
-        entity_commands.insert(ColorPickerMarker);
-    }
-    if node
-        .try_get::<godot::classes::ColorPickerButton>()
-        .is_some()
-    {
-        entity_commands.insert(ColorPickerButtonMarker);
-    }
-    if node.try_get::<godot::classes::ColorRect>().is_some() {
-        entity_commands.insert(ColorRectMarker);
-    }
-    if node.try_get::<godot::classes::Container>().is_some() {
-        entity_commands.insert(ContainerMarker);
-    }
-    if node.try_get::<godot::classes::FlowContainer>().is_some() {
-        entity_commands.insert(FlowContainerMarker);
-    }
-    if node.try_get::<godot::classes::GridContainer>().is_some() {
-        entity_commands.insert(GridContainerMarker);
-    }
-    if node.try_get::<godot::classes::HBoxContainer>().is_some() {
-        entity_commands.insert(HBoxContainerMarker);
-    }
-    if node.try_get::<godot::classes::HFlowContainer>().is_some() {
-        entity_commands.insert(HFlowContainerMarker);
-    }
-    if node.try_get::<godot::classes::HScrollBar>().is_some() {
-        entity_commands.insert(HScrollBarMarker);
-    }
-    if node.try_get::<godot::classes::HSeparator>().is_some() {
-        entity_commands.insert(HSeparatorMarker);
-    }
-    if node.try_get::<godot::classes::HSlider>().is_some() {
-        entity_commands.insert(HSliderMarker);
-    }
-    if node.try_get::<godot::classes::HSplitContainer>().is_some() {
-        entity_commands.insert(HSplitContainerMarker);
-    }
-    if node.try_get::<godot::classes::ItemList>().is_some() {
-        entity_commands.insert(ItemListMarker);
-    }
-    if node.try_get::<godot::classes::Label>().is_some() {
-        entity_commands.insert(LabelMarker);
-    }
-    if node.try_get::<godot::classes::LineEdit>().is_some() {
-        entity_commands.insert(LineEditMarker);
-    }
-    if node.try_get::<godot::classes::LinkButton>().is_some() {
-        entity_commands.insert(LinkButtonMarker);
-    }
-    if node.try_get::<godot::classes::MarginContainer>().is_some() {
-        entity_commands.insert(MarginContainerMarker);
-    }
-    if node.try_get::<godot::classes::MenuBar>().is_some() {
-        entity_commands.insert(MenuBarMarker);
-    }
-    if node.try_get::<godot::classes::MenuButton>().is_some() {
-        entity_commands.insert(MenuButtonMarker);
-    }
-    if node.try_get::<godot::classes::NinePatchRect>().is_some() {
-        entity_commands.insert(NinePatchRectMarker);
-    }
-    if node.try_get::<godot::classes::OptionButton>().is_some() {
-        entity_commands.insert(OptionButtonMarker);
-    }
-    if node.try_get::<godot::classes::Panel>().is_some() {
-        entity_commands.insert(PanelMarker);
-    }
-    if node.try_get::<godot::classes::PanelContainer>().is_some() {
-        entity_commands.insert(PanelContainerMarker);
-    }
-    if node.try_get::<godot::classes::ProgressBar>().is_some() {
-        entity_commands.insert(ProgressBarMarker);
-    }
-    if node.try_get::<godot::classes::Range>().is_some() {
-        entity_commands.insert(RangeMarker);
-    }
-    if node.try_get::<godot::classes::ReferenceRect>().is_some() {
-        entity_commands.insert(ReferenceRectMarker);
-    }
-    if node.try_get::<godot::classes::RichTextLabel>().is_some() {
-        entity_commands.insert(RichTextLabelMarker);
-    }
-    if node.try_get::<godot::classes::ScrollBar>().is_some() {
-        entity_commands.insert(ScrollBarMarker);
-    }
-    if node.try_get::<godot::classes::ScrollContainer>().is_some() {
-        entity_commands.insert(ScrollContainerMarker);
-    }
-    if node.try_get::<godot::classes::Separator>().is_some() {
-        entity_commands.insert(SeparatorMarker);
-    }
-    if node.try_get::<godot::classes::Slider>().is_some() {
-        entity_commands.insert(SliderMarker);
-    }
-    if node.try_get::<godot::classes::SpinBox>().is_some() {
-        entity_commands.insert(SpinBoxMarker);
-    }
-    if node.try_get::<godot::classes::SplitContainer>().is_some() {
-        entity_commands.insert(SplitContainerMarker);
-    }
-    if node
-        .try_get::<godot::classes::SubViewportContainer>()
-        .is_some()
-    {
-        entity_commands.insert(SubViewportContainerMarker);
-    }
-    if node.try_get::<godot::classes::TabBar>().is_some() {
-        entity_commands.insert(TabBarMarker);
-    }
-    if node.try_get::<godot::classes::TabContainer>().is_some() {
-        entity_commands.insert(TabContainerMarker);
-    }
-    if node.try_get::<godot::classes::TextEdit>().is_some() {
-        entity_commands.insert(TextEditMarker);
-    }
-    if node.try_get::<godot::classes::TextureButton>().is_some() {
-        entity_commands.insert(TextureButtonMarker);
-    }
-    if node
-        .try_get::<godot::classes::TextureProgressBar>()
-        .is_some()
-    {
-        entity_commands.insert(TextureProgressBarMarker);
-    }
-    if node.try_get::<godot::classes::TextureRect>().is_some() {
-        entity_commands.insert(TextureRectMarker);
-    }
-    if node.try_get::<godot::classes::Tree>().is_some() {
-        entity_commands.insert(TreeMarker);
-    }
-    if node.try_get::<godot::classes::VBoxContainer>().is_some() {
-        entity_commands.insert(VBoxContainerMarker);
-    }
-    if node.try_get::<godot::classes::VFlowContainer>().is_some() {
-        entity_commands.insert(VFlowContainerMarker);
-    }
-    if node.try_get::<godot::classes::VScrollBar>().is_some() {
-        entity_commands.insert(VScrollBarMarker);
-    }
-    if node.try_get::<godot::classes::VSeparator>().is_some() {
-        entity_commands.insert(VSeparatorMarker);
-    }
-    if node.try_get::<godot::classes::VSlider>().is_some() {
-        entity_commands.insert(VSliderMarker);
-    }
-    if node.try_get::<godot::classes::VSplitContainer>().is_some() {
-        entity_commands.insert(VSplitContainerMarker);
-    }
-    if node
-        .try_get::<godot::classes::VideoStreamPlayer>()
-        .is_some()
-    {
-        entity_commands.insert(VideoStreamPlayerMarker);
-    }
-}
-
-fn check_universal_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
-    if node.try_get::<godot::classes::AnimationMixer>().is_some() {
-        entity_commands.insert(AnimationMixerMarker);
-    }
-    if node
-        .try_get::<godot::classes::AudioStreamPlayer>()
-        .is_some()
-    {
-        entity_commands.insert(AudioStreamPlayerMarker);
-    }
-    if node.try_get::<godot::classes::CanvasItem>().is_some() {
-        entity_commands.insert(CanvasItemMarker);
-    }
-    if node.try_get::<godot::classes::CanvasLayer>().is_some() {
-        entity_commands.insert(CanvasLayerMarker);
-    }
-    if node.try_get::<godot::classes::HttpRequest>().is_some() {
-        entity_commands.insert(HTTPRequestMarker);
-    }
-    if node
-        .try_get::<godot::classes::InstancePlaceholder>()
-        .is_some()
-    {
-        entity_commands.insert(InstancePlaceholderMarker);
-    }
-    if node
-        .try_get::<godot::classes::MultiplayerSpawner>()
-        .is_some()
-    {
-        entity_commands.insert(MultiplayerSpawnerMarker);
-    }
-    if node
-        .try_get::<godot::classes::MultiplayerSynchronizer>()
-        .is_some()
-    {
-        entity_commands.insert(MultiplayerSynchronizerMarker);
-    }
-    if node.try_get::<godot::classes::Node3D>().is_some() {
-        entity_commands.insert(Node3DMarker);
-    }
-    if node
-        .try_get::<godot::classes::ResourcePreloader>()
-        .is_some()
-    {
-        entity_commands.insert(ResourcePreloaderMarker);
-    }
-    if node
-        .try_get::<godot::classes::ShaderGlobalsOverride>()
-        .is_some()
-    {
-        entity_commands.insert(ShaderGlobalsOverrideMarker);
-    }
-    if node.try_get::<godot::classes::Timer>().is_some() {
-        entity_commands.insert(TimerMarker);
-    }
-    if node.try_get::<godot::classes::Viewport>().is_some() {
-        entity_commands.insert(ViewportMarker);
-    }
-}
-
-pub fn remove_comprehensive_node_type_markers(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
-    // All nodes inherit from Node, so add this first
-    entity_commands.remove::<NodeMarker>();
-
-    // remove the major hierarchy branches to minimize FFI calls
-    if node.try_get::<godot::classes::Node3D>().is_some() {
-        entity_commands.remove::<Node3DMarker>();
-        remove_3d_node_types_comprehensive(entity_commands, node);
-    } else if node.try_get::<godot::classes::Node2D>().is_some() {
-        entity_commands.remove::<Node2DMarker>();
-        entity_commands.remove::<CanvasItemMarker>(); // Node2D inherits from CanvasItem
-        remove_2d_node_types_comprehensive(entity_commands, node);
-    } else if node.try_get::<godot::classes::Control>().is_some() {
-        entity_commands.remove::<ControlMarker>();
-        entity_commands.remove::<CanvasItemMarker>(); // Control inherits from CanvasItem
-        remove_control_node_types_comprehensive(entity_commands, node);
-    }
-
-    // remove node types that inherit directly from Node
-    remove_universal_node_types_comprehensive(entity_commands, node);
 }
 
 fn remove_3d_node_types_comprehensive(
@@ -1097,6 +671,180 @@ fn remove_3d_node_types_comprehensive(
     }
 }
 
+fn check_2d_node_types_comprehensive(
+    entity_commands: &mut EntityCommands,
+    node: &mut GodotNodeHandle,
+) {
+    if node.try_get::<godot::classes::AnimatableBody2D>().is_some() {
+        entity_commands.insert(AnimatableBody2DMarker);
+    }
+    if node.try_get::<godot::classes::AnimatedSprite2D>().is_some() {
+        entity_commands.insert(AnimatedSprite2DMarker);
+    }
+    if node.try_get::<godot::classes::Area2D>().is_some() {
+        entity_commands.insert(Area2DMarker);
+    }
+    if node.try_get::<godot::classes::AudioListener2D>().is_some() {
+        entity_commands.insert(AudioListener2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::AudioStreamPlayer2D>()
+        .is_some()
+    {
+        entity_commands.insert(AudioStreamPlayer2DMarker);
+    }
+    if node.try_get::<godot::classes::BackBufferCopy>().is_some() {
+        entity_commands.insert(BackBufferCopyMarker);
+    }
+    if node.try_get::<godot::classes::Bone2D>().is_some() {
+        entity_commands.insert(Bone2DMarker);
+    }
+    if node.try_get::<godot::classes::CpuParticles2D>().is_some() {
+        entity_commands.insert(CPUParticles2DMarker);
+    }
+    if node.try_get::<godot::classes::Camera2D>().is_some() {
+        entity_commands.insert(Camera2DMarker);
+    }
+    if node.try_get::<godot::classes::CanvasGroup>().is_some() {
+        entity_commands.insert(CanvasGroupMarker);
+    }
+    if node.try_get::<godot::classes::CanvasModulate>().is_some() {
+        entity_commands.insert(CanvasModulateMarker);
+    }
+    if node.try_get::<godot::classes::CharacterBody2D>().is_some() {
+        entity_commands.insert(CharacterBody2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::CollisionObject2D>()
+        .is_some()
+    {
+        entity_commands.insert(CollisionObject2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::CollisionPolygon2D>()
+        .is_some()
+    {
+        entity_commands.insert(CollisionPolygon2DMarker);
+    }
+    if node.try_get::<godot::classes::CollisionShape2D>().is_some() {
+        entity_commands.insert(CollisionShape2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::DampedSpringJoint2D>()
+        .is_some()
+    {
+        entity_commands.insert(DampedSpringJoint2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::DirectionalLight2D>()
+        .is_some()
+    {
+        entity_commands.insert(DirectionalLight2DMarker);
+    }
+    if node.try_get::<godot::classes::GpuParticles2D>().is_some() {
+        entity_commands.insert(GPUParticles2DMarker);
+    }
+    if node.try_get::<godot::classes::GrooveJoint2D>().is_some() {
+        entity_commands.insert(GrooveJoint2DMarker);
+    }
+    if node.try_get::<godot::classes::Joint2D>().is_some() {
+        entity_commands.insert(Joint2DMarker);
+    }
+    if node.try_get::<godot::classes::Light2D>().is_some() {
+        entity_commands.insert(Light2DMarker);
+    }
+    if node.try_get::<godot::classes::LightOccluder2D>().is_some() {
+        entity_commands.insert(LightOccluder2DMarker);
+    }
+    if node.try_get::<godot::classes::Line2D>().is_some() {
+        entity_commands.insert(Line2DMarker);
+    }
+    if node.try_get::<godot::classes::Marker2D>().is_some() {
+        entity_commands.insert(Marker2DMarker);
+    }
+    if node.try_get::<godot::classes::MeshInstance2D>().is_some() {
+        entity_commands.insert(MeshInstance2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::MultiMeshInstance2D>()
+        .is_some()
+    {
+        entity_commands.insert(MultiMeshInstance2DMarker);
+    }
+    if node.try_get::<godot::classes::ParallaxLayer>().is_some() {
+        entity_commands.insert(ParallaxLayerMarker);
+    }
+    if node.try_get::<godot::classes::Path2D>().is_some() {
+        entity_commands.insert(Path2DMarker);
+    }
+    if node.try_get::<godot::classes::PathFollow2D>().is_some() {
+        entity_commands.insert(PathFollow2DMarker);
+    }
+    if node.try_get::<godot::classes::PhysicalBone2D>().is_some() {
+        entity_commands.insert(PhysicalBone2DMarker);
+    }
+    if node.try_get::<godot::classes::PhysicsBody2D>().is_some() {
+        entity_commands.insert(PhysicsBody2DMarker);
+    }
+    if node.try_get::<godot::classes::PinJoint2D>().is_some() {
+        entity_commands.insert(PinJoint2DMarker);
+    }
+    if node.try_get::<godot::classes::PointLight2D>().is_some() {
+        entity_commands.insert(PointLight2DMarker);
+    }
+    if node.try_get::<godot::classes::Polygon2D>().is_some() {
+        entity_commands.insert(Polygon2DMarker);
+    }
+    if node.try_get::<godot::classes::RayCast2D>().is_some() {
+        entity_commands.insert(RayCast2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::RemoteTransform2D>()
+        .is_some()
+    {
+        entity_commands.insert(RemoteTransform2DMarker);
+    }
+    if node.try_get::<godot::classes::RigidBody2D>().is_some() {
+        entity_commands.insert(RigidBody2DMarker);
+    }
+    if node.try_get::<godot::classes::ShapeCast2D>().is_some() {
+        entity_commands.insert(ShapeCast2DMarker);
+    }
+    if node.try_get::<godot::classes::Skeleton2D>().is_some() {
+        entity_commands.insert(Skeleton2DMarker);
+    }
+    if node.try_get::<godot::classes::Sprite2D>().is_some() {
+        entity_commands.insert(Sprite2DMarker);
+    }
+    if node.try_get::<godot::classes::StaticBody2D>().is_some() {
+        entity_commands.insert(StaticBody2DMarker);
+    }
+    if node.try_get::<godot::classes::TileMap>().is_some() {
+        entity_commands.insert(TileMapMarker);
+    }
+    if node.try_get::<godot::classes::TileMapLayer>().is_some() {
+        entity_commands.insert(TileMapLayerMarker);
+    }
+    if node
+        .try_get::<godot::classes::TouchScreenButton>()
+        .is_some()
+    {
+        entity_commands.insert(TouchScreenButtonMarker);
+    }
+    if node
+        .try_get::<godot::classes::VisibleOnScreenEnabler2D>()
+        .is_some()
+    {
+        entity_commands.insert(VisibleOnScreenEnabler2DMarker);
+    }
+    if node
+        .try_get::<godot::classes::VisibleOnScreenNotifier2D>()
+        .is_some()
+    {
+        entity_commands.insert(VisibleOnScreenNotifier2DMarker);
+    }
+}
+
 fn remove_2d_node_types_comprehensive(
     entity_commands: &mut EntityCommands,
     node: &mut GodotNodeHandle,
@@ -1268,6 +1016,195 @@ fn remove_2d_node_types_comprehensive(
         .is_some()
     {
         entity_commands.remove::<VisibleOnScreenNotifier2DMarker>();
+    }
+}
+
+fn check_control_node_types_comprehensive(
+    entity_commands: &mut EntityCommands,
+    node: &mut GodotNodeHandle,
+) {
+    if node
+        .try_get::<godot::classes::AspectRatioContainer>()
+        .is_some()
+    {
+        entity_commands.insert(AspectRatioContainerMarker);
+    }
+    if node.try_get::<godot::classes::BaseButton>().is_some() {
+        entity_commands.insert(BaseButtonMarker);
+    }
+    if node.try_get::<godot::classes::BoxContainer>().is_some() {
+        entity_commands.insert(BoxContainerMarker);
+    }
+    if node.try_get::<godot::classes::Button>().is_some() {
+        entity_commands.insert(ButtonMarker);
+    }
+    if node.try_get::<godot::classes::CenterContainer>().is_some() {
+        entity_commands.insert(CenterContainerMarker);
+    }
+    if node.try_get::<godot::classes::CheckBox>().is_some() {
+        entity_commands.insert(CheckBoxMarker);
+    }
+    if node.try_get::<godot::classes::CheckButton>().is_some() {
+        entity_commands.insert(CheckButtonMarker);
+    }
+    if node.try_get::<godot::classes::CodeEdit>().is_some() {
+        entity_commands.insert(CodeEditMarker);
+    }
+    if node.try_get::<godot::classes::ColorPicker>().is_some() {
+        entity_commands.insert(ColorPickerMarker);
+    }
+    if node
+        .try_get::<godot::classes::ColorPickerButton>()
+        .is_some()
+    {
+        entity_commands.insert(ColorPickerButtonMarker);
+    }
+    if node.try_get::<godot::classes::ColorRect>().is_some() {
+        entity_commands.insert(ColorRectMarker);
+    }
+    if node.try_get::<godot::classes::Container>().is_some() {
+        entity_commands.insert(ContainerMarker);
+    }
+    if node.try_get::<godot::classes::FlowContainer>().is_some() {
+        entity_commands.insert(FlowContainerMarker);
+    }
+    if node.try_get::<godot::classes::GridContainer>().is_some() {
+        entity_commands.insert(GridContainerMarker);
+    }
+    if node.try_get::<godot::classes::HBoxContainer>().is_some() {
+        entity_commands.insert(HBoxContainerMarker);
+    }
+    if node.try_get::<godot::classes::HFlowContainer>().is_some() {
+        entity_commands.insert(HFlowContainerMarker);
+    }
+    if node.try_get::<godot::classes::HScrollBar>().is_some() {
+        entity_commands.insert(HScrollBarMarker);
+    }
+    if node.try_get::<godot::classes::HSeparator>().is_some() {
+        entity_commands.insert(HSeparatorMarker);
+    }
+    if node.try_get::<godot::classes::HSlider>().is_some() {
+        entity_commands.insert(HSliderMarker);
+    }
+    if node.try_get::<godot::classes::HSplitContainer>().is_some() {
+        entity_commands.insert(HSplitContainerMarker);
+    }
+    if node.try_get::<godot::classes::ItemList>().is_some() {
+        entity_commands.insert(ItemListMarker);
+    }
+    if node.try_get::<godot::classes::Label>().is_some() {
+        entity_commands.insert(LabelMarker);
+    }
+    if node.try_get::<godot::classes::LineEdit>().is_some() {
+        entity_commands.insert(LineEditMarker);
+    }
+    if node.try_get::<godot::classes::LinkButton>().is_some() {
+        entity_commands.insert(LinkButtonMarker);
+    }
+    if node.try_get::<godot::classes::MarginContainer>().is_some() {
+        entity_commands.insert(MarginContainerMarker);
+    }
+    if node.try_get::<godot::classes::MenuBar>().is_some() {
+        entity_commands.insert(MenuBarMarker);
+    }
+    if node.try_get::<godot::classes::MenuButton>().is_some() {
+        entity_commands.insert(MenuButtonMarker);
+    }
+    if node.try_get::<godot::classes::NinePatchRect>().is_some() {
+        entity_commands.insert(NinePatchRectMarker);
+    }
+    if node.try_get::<godot::classes::OptionButton>().is_some() {
+        entity_commands.insert(OptionButtonMarker);
+    }
+    if node.try_get::<godot::classes::Panel>().is_some() {
+        entity_commands.insert(PanelMarker);
+    }
+    if node.try_get::<godot::classes::PanelContainer>().is_some() {
+        entity_commands.insert(PanelContainerMarker);
+    }
+    if node.try_get::<godot::classes::ProgressBar>().is_some() {
+        entity_commands.insert(ProgressBarMarker);
+    }
+    if node.try_get::<godot::classes::Range>().is_some() {
+        entity_commands.insert(RangeMarker);
+    }
+    if node.try_get::<godot::classes::ReferenceRect>().is_some() {
+        entity_commands.insert(ReferenceRectMarker);
+    }
+    if node.try_get::<godot::classes::RichTextLabel>().is_some() {
+        entity_commands.insert(RichTextLabelMarker);
+    }
+    if node.try_get::<godot::classes::ScrollBar>().is_some() {
+        entity_commands.insert(ScrollBarMarker);
+    }
+    if node.try_get::<godot::classes::ScrollContainer>().is_some() {
+        entity_commands.insert(ScrollContainerMarker);
+    }
+    if node.try_get::<godot::classes::Separator>().is_some() {
+        entity_commands.insert(SeparatorMarker);
+    }
+    if node.try_get::<godot::classes::Slider>().is_some() {
+        entity_commands.insert(SliderMarker);
+    }
+    if node.try_get::<godot::classes::SpinBox>().is_some() {
+        entity_commands.insert(SpinBoxMarker);
+    }
+    if node.try_get::<godot::classes::SplitContainer>().is_some() {
+        entity_commands.insert(SplitContainerMarker);
+    }
+    if node
+        .try_get::<godot::classes::SubViewportContainer>()
+        .is_some()
+    {
+        entity_commands.insert(SubViewportContainerMarker);
+    }
+    if node.try_get::<godot::classes::TabBar>().is_some() {
+        entity_commands.insert(TabBarMarker);
+    }
+    if node.try_get::<godot::classes::TabContainer>().is_some() {
+        entity_commands.insert(TabContainerMarker);
+    }
+    if node.try_get::<godot::classes::TextEdit>().is_some() {
+        entity_commands.insert(TextEditMarker);
+    }
+    if node.try_get::<godot::classes::TextureButton>().is_some() {
+        entity_commands.insert(TextureButtonMarker);
+    }
+    if node
+        .try_get::<godot::classes::TextureProgressBar>()
+        .is_some()
+    {
+        entity_commands.insert(TextureProgressBarMarker);
+    }
+    if node.try_get::<godot::classes::TextureRect>().is_some() {
+        entity_commands.insert(TextureRectMarker);
+    }
+    if node.try_get::<godot::classes::Tree>().is_some() {
+        entity_commands.insert(TreeMarker);
+    }
+    if node.try_get::<godot::classes::VBoxContainer>().is_some() {
+        entity_commands.insert(VBoxContainerMarker);
+    }
+    if node.try_get::<godot::classes::VFlowContainer>().is_some() {
+        entity_commands.insert(VFlowContainerMarker);
+    }
+    if node.try_get::<godot::classes::VScrollBar>().is_some() {
+        entity_commands.insert(VScrollBarMarker);
+    }
+    if node.try_get::<godot::classes::VSeparator>().is_some() {
+        entity_commands.insert(VSeparatorMarker);
+    }
+    if node.try_get::<godot::classes::VSlider>().is_some() {
+        entity_commands.insert(VSliderMarker);
+    }
+    if node.try_get::<godot::classes::VSplitContainer>().is_some() {
+        entity_commands.insert(VSplitContainerMarker);
+    }
+    if node
+        .try_get::<godot::classes::VideoStreamPlayer>()
+        .is_some()
+    {
+        entity_commands.insert(VideoStreamPlayerMarker);
     }
 }
 
@@ -1460,6 +1397,68 @@ fn remove_control_node_types_comprehensive(
     }
 }
 
+fn check_universal_node_types_comprehensive(
+    entity_commands: &mut EntityCommands,
+    node: &mut GodotNodeHandle,
+) {
+    if node.try_get::<godot::classes::AnimationMixer>().is_some() {
+        entity_commands.insert(AnimationMixerMarker);
+    }
+    if node
+        .try_get::<godot::classes::AudioStreamPlayer>()
+        .is_some()
+    {
+        entity_commands.insert(AudioStreamPlayerMarker);
+    }
+    if node.try_get::<godot::classes::CanvasItem>().is_some() {
+        entity_commands.insert(CanvasItemMarker);
+    }
+    if node.try_get::<godot::classes::CanvasLayer>().is_some() {
+        entity_commands.insert(CanvasLayerMarker);
+    }
+    if node.try_get::<godot::classes::HttpRequest>().is_some() {
+        entity_commands.insert(HTTPRequestMarker);
+    }
+    if node
+        .try_get::<godot::classes::InstancePlaceholder>()
+        .is_some()
+    {
+        entity_commands.insert(InstancePlaceholderMarker);
+    }
+    if node
+        .try_get::<godot::classes::MultiplayerSpawner>()
+        .is_some()
+    {
+        entity_commands.insert(MultiplayerSpawnerMarker);
+    }
+    if node
+        .try_get::<godot::classes::MultiplayerSynchronizer>()
+        .is_some()
+    {
+        entity_commands.insert(MultiplayerSynchronizerMarker);
+    }
+    if node.try_get::<godot::classes::Node3D>().is_some() {
+        entity_commands.insert(Node3DMarker);
+    }
+    if node
+        .try_get::<godot::classes::ResourcePreloader>()
+        .is_some()
+    {
+        entity_commands.insert(ResourcePreloaderMarker);
+    }
+    if node
+        .try_get::<godot::classes::ShaderGlobalsOverride>()
+        .is_some()
+    {
+        entity_commands.insert(ShaderGlobalsOverrideMarker);
+    }
+    if node.try_get::<godot::classes::Timer>().is_some() {
+        entity_commands.insert(TimerMarker);
+    }
+    if node.try_get::<godot::classes::Viewport>().is_some() {
+        entity_commands.insert(ViewportMarker);
+    }
+}
 fn remove_universal_node_types_comprehensive(
     entity_commands: &mut EntityCommands,
     node: &mut GodotNodeHandle,

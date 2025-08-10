@@ -1,6 +1,8 @@
-use super::node_type_checking_generated::{add_comprehensive_node_type_markers, remove_comprehensive_node_type_markers};
+use super::node_type_checking_generated::{
+    add_comprehensive_node_type_markers, remove_comprehensive_node_type_markers,
+};
 use crate::plugins::core::SceneTreeComponentRegistry;
-use crate::prelude::{main_thread_system, GodotScene};
+use crate::prelude::{GodotScene, main_thread_system};
 use crate::{
     interop::GodotNodeHandle,
     plugins::collisions::{
