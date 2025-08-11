@@ -62,7 +62,7 @@ impl<'w> GodotSignals<'w> {
         connect_godot_signal(node, signal_name, self.signal_sender.0.clone(), None);
     }
 
-    pub fn connect_to_target(&self, node: &mut GodotNodeHandle, signal_name: &str, target: &GodotSignalTarget) {
+    pub fn connect_to_target(&self, node: &mut GodotNodeHandle, signal_name: &str, target: &mut GodotSignalTarget) {
         connect_godot_signal(node, signal_name, self.signal_sender.0.clone(), Some(target.clone()));
     }
 }
