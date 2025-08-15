@@ -236,10 +236,10 @@ fn write_scene_tree_events(
     event_writer.write_batch(event_reader.0.try_iter());
 }
 
-// Marks an entity as protected from cleanup if an attached node is freed
-// This allows for cases where game logic still runs on things outside of the scene, and you only
-// want Godot Nodes for when something is on screen. Examples include factory games with multiple
-// surfaces, RPGs where you want to simulate NPC behavior outside of the current scene
+/// Marks an entity so it is not despawned when its corresponding Godot Node is freed, breaking
+/// the usual 1-to-1 lifetime between them. This allows game logic to keep running on entities
+/// that have no Node, such as simulating off-screen factory machines or NPCs in inactive scenes.
+/// A Godot Node can be re-associated later by adding a `GodotScene` component to the **entity.**
 #[derive(Component)]
 pub struct ProtectedNodeEntity;
 
