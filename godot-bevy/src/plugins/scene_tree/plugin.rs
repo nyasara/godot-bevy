@@ -372,9 +372,8 @@ fn create_scene_tree_entity(
                 }
             }
             SceneTreeEventType::NodeRemoved => {
-                if let Some(entmap) = ent {
-                    let ent = entmap.0;
-                    let protected = entmap.1.is_some();
+                if let Some((ent, protected_opt)) = ent {
+                    let protected = protected_opt.is_some();
                     if !protected {
                         commands.entity(ent).despawn();
                     } else {
@@ -387,9 +386,9 @@ fn create_scene_tree_entity(
                 }
             }
             SceneTreeEventType::NodeRenamed => {
-                if let Some(ent) = ent {
+                if let Some((ent, _)) = ent {
                     commands
-                        .entity(ent.0)
+                        .entity(ent)
                         .insert(Name::from(node.get::<Node>().get_name().to_string()));
                 } else {
                     trace!(target: "godot_scene_tree_events", "Entity for renamed node was already despawned");
