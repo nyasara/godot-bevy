@@ -331,7 +331,6 @@ pub fn remove_comprehensive_node_type_markers(
         for node_type in sorted(types):
             rust_class_name = self.fix_godot_class_name_for_rust(node_type)
             content += f'''        .remove::<{node_type}Marker>()
-
 '''
 
         content += ";}\n\n"
@@ -365,7 +364,6 @@ pub fn remove_comprehensive_node_type_markers(
         for node_type in sorted(types):
             rust_class_name = self.fix_godot_class_name_for_rust(node_type)
             content += f'''        .remove::<{node_type}Marker>()
-
 '''
 
         content += ";}\n"
