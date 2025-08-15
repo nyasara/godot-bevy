@@ -324,16 +324,17 @@ pub fn remove_comprehensive_node_type_markers(
     entity_commands: &mut EntityCommands,
     node: &mut GodotNodeHandle,
 ) {{
+    entity_commands
+
 '''
 
         for node_type in sorted(types):
             rust_class_name = self.fix_godot_class_name_for_rust(node_type)
-            content += f'''    if node.try_get::<godot::classes::{rust_class_name}>().is_some() {{
-        entity_commands.remove::<{node_type}Marker>();
-    }}
+            content += f'''        .remove::<{node_type}Marker>()
+
 '''
 
-        content += "}\n\n"
+        content += ";}\n\n"
         return content
 
     def _generate_universal_function_comprehensive(self, types):
@@ -357,16 +358,17 @@ pub fn remove_comprehensive_node_type_markers(
     entity_commands: &mut EntityCommands,
     node: &mut GodotNodeHandle,
 ) {
+    entity_commands
+
 '''
 
         for node_type in sorted(types):
             rust_class_name = self.fix_godot_class_name_for_rust(node_type)
-            content += f'''    if node.try_get::<godot::classes::{rust_class_name}>().is_some() {{
-        entity_commands.remove::<{node_type}Marker>();
-    }}
+            content += f'''        .remove::<{node_type}Marker>()
+
 '''
 
-        content += "}\n"
+        content += ";}\n"
         return content
 
     def verify_plugin_integration(self):
