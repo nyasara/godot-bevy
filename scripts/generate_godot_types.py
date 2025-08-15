@@ -368,7 +368,7 @@ pub fn remove_comprehensive_node_type_markers(
 
 '''
 
-        content += "}\n"
+        content += ";}\n"
         return content
 
     def verify_plugin_integration(self):

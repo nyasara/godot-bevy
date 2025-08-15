@@ -237,6 +237,9 @@ fn write_scene_tree_events(
 }
 
 // Marks an entity as protected from cleanup if an attached node is freed
+// This allows for cases where game logic still runs on things outside of the scene, and you only
+// want Godot Nodes for when something is on screen. Examples include factory games with multiple
+// surfaces, RPGs where you want to simulate NPC behavior outside of the current scene
 #[derive(Component)]
 pub struct ProtectedNodeEntity;
 
@@ -272,8 +275,8 @@ fn create_scene_tree_entity(
                     continue;
                 }
 
-                let mut ent = if let Some(ent) = ent {
-                    commands.entity(ent.0)
+                let mut ent = if let Some((ent, _)) = ent {
+                    commands.entity(ent)
                 } else {
                     commands.spawn_empty()
                 };
