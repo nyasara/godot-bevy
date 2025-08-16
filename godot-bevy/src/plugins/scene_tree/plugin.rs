@@ -377,7 +377,7 @@ fn create_scene_tree_entity(
                     if !protected {
                         commands.entity(ent).despawn();
                     } else {
-                        _strip_godot_components(commands, ent, &mut node);
+                        _strip_godot_components(commands, ent);
                     }
                     ent_mapping.remove(&node.instance_id());
                 } else {
@@ -398,7 +398,7 @@ fn create_scene_tree_entity(
     }
 }
 
-fn _strip_godot_components(commands: &mut Commands, ent: Entity, node: &mut GodotNodeHandle) {
+fn _strip_godot_components(commands: &mut Commands, ent: Entity) {
     let mut entity_commands = commands.entity(ent);
     // Remove GodotNodeHandle components
     entity_commands.remove::<GodotNodeHandle>();
@@ -409,7 +409,7 @@ fn _strip_godot_components(commands: &mut Commands, ent: Entity, node: &mut Godo
     // Remove automatic markers
     entity_commands.remove::<Name>();
     entity_commands.remove::<Groups>();
-    remove_comprehensive_node_type_markers(&mut entity_commands, node);
+    remove_comprehensive_node_type_markers(&mut entity_commands);
 }
 
 #[main_thread_system]

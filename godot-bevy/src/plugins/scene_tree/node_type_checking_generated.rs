@@ -34,24 +34,21 @@ pub fn add_comprehensive_node_type_markers(
     check_universal_node_types_comprehensive(entity_commands, node);
 }
 
-pub fn remove_comprehensive_node_type_markers(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
+pub fn remove_comprehensive_node_type_markers(entity_commands: &mut EntityCommands) {
     // All nodes inherit from Node, so remove this first
     entity_commands.remove::<NodeMarker>();
 
     entity_commands.remove::<Node3DMarker>();
-    remove_3d_node_types_comprehensive(entity_commands, node);
+    remove_3d_node_types_comprehensive(entity_commands);
 
     entity_commands.remove::<Node2DMarker>();
     entity_commands.remove::<CanvasItemMarker>(); // Node2D inherits from CanvasItem
-    remove_2d_node_types_comprehensive(entity_commands, node);
+    remove_2d_node_types_comprehensive(entity_commands);
 
     entity_commands.remove::<ControlMarker>();
-    remove_control_node_types_comprehensive(entity_commands, node);
+    remove_control_node_types_comprehensive(entity_commands);
 
-    remove_universal_node_types_comprehensive(entity_commands, node);
+    remove_universal_node_types_comprehensive(entity_commands);
 }
 
 fn check_3d_node_types_comprehensive(
@@ -360,10 +357,7 @@ fn check_3d_node_types_comprehensive(
     }
 }
 
-fn remove_3d_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
+fn remove_3d_node_types_comprehensive(entity_commands: &mut EntityCommands) {
     entity_commands
         .remove::<AnimatableBody3DMarker>()
         .remove::<AnimatedSprite3DMarker>()
@@ -613,10 +607,7 @@ fn check_2d_node_types_comprehensive(
     }
 }
 
-fn remove_2d_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
+fn remove_2d_node_types_comprehensive(entity_commands: &mut EntityCommands) {
     entity_commands
         .remove::<AnimatableBody2DMarker>()
         .remove::<AnimatedSprite2DMarker>()
@@ -855,10 +846,7 @@ fn check_control_node_types_comprehensive(
     }
 }
 
-fn remove_control_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
+fn remove_control_node_types_comprehensive(entity_commands: &mut EntityCommands) {
     entity_commands
         .remove::<AspectRatioContainerMarker>()
         .remove::<BaseButtonMarker>()
@@ -980,10 +968,7 @@ fn check_universal_node_types_comprehensive(
         entity_commands.insert(ViewportMarker);
     }
 }
-fn remove_universal_node_types_comprehensive(
-    entity_commands: &mut EntityCommands,
-    node: &mut GodotNodeHandle,
-) {
+fn remove_universal_node_types_comprehensive(entity_commands: &mut EntityCommands) {
     entity_commands
         .remove::<AnimationMixerMarker>()
         .remove::<AudioStreamPlayerMarker>()
